@@ -6,6 +6,12 @@
 `git commit -m "commit"` # save a snapshot
 `git push origin main ` # send to GitHub
 
+# If you want to clone the repo:
+
+`git clone https://github.com/Adrien-nkc/CLI`
+
+then `cd CLI` and `bun install`
+
 # How to run tests
 
 `npx vitest run`
