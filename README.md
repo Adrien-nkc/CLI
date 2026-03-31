@@ -1,3 +1,11 @@
+# How to push and pull changes
+
+`git pull` or `git pull origin main` # grab latest changes
+
+`git add .` # stage everything
+`git commit -m "commit"` # save a snapshot
+`git push origin main ` # send to GitHub
+
 # How to run tests
 
 `npx vitest run`
