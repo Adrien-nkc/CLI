@@ -1,0 +1,30 @@
+{
+  "name": "alin",
+  "version": "0.0.1",
+  "description": "Turn a multi-hour API integration into a single command",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "alin": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "bun src/index.ts",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^14.0.3"
+  }
+}
