@@ -116,6 +116,13 @@ program
     }
 
     // ── 5. Done ──────────────────────────────────────────────────────────
+
+    console.log(chalk.cyan("\n📋 Next steps:"));
+    block.instructions.forEach((step: string, i: number) => {
+      console.log(chalk.white(`   ${i + 1}. ${step}`));
+    });
+    console.log("");
+
     console.log(
       chalk.green(`✓ ${integration} is ready. Add your keys and go.`),
     );
