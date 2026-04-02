@@ -48,21 +48,9 @@ program
       ],
     });
 
-    // ── 2. Fetch block from API ──────────────────────────────────────────
-    const API_URL = process.env.ALIN_API_URL ?? "http://localhost:3000";
-    const res = await fetch(
-      `${API_URL}/blocks/${integration}?variant=${String(variant)}`,
-    );
-    if (!res.ok) {
-      console.log(chalk.red(`✗ Unknown integration: ${integration}`));
-      console.log(chalk.gray("Run `alin list` to see available integrations"));
-      process.exit(1);
-    }
-
-    const { block } = await res.json();
-
-    // ── 3. Detect project type and resolve install path ──────────────────
+    // ── 2. Detect project type early (needed for API call) ───────────────
     const cwd = process.cwd();
+    const { execSync } = await import("child_process");
 
     if (!isNodeProject(cwd)) {
       const setup = await confirm({
@@ -76,41 +64,73 @@ program
         process.exit(1);
       }
 
-      const { execSync } = await import("child_process");
       execSync("npm init -y", { cwd, stdio: "ignore" });
       console.log(chalk.green("✓ Node project initialized"));
     }
 
     const projectType = detectProjectStructure(cwd);
+
+    // ── 3. Fetch block from API ──────────────────────────────────────────
+    const API_URL = process.env.ALIN_API_URL ?? "http://localhost:3000";
+    const res = await fetch(
+      `${API_URL}/blocks/${integration}?variant=${String(variant)}&framework=${projectType}`,
+    );
+
+    if (!res.ok) {
+      console.log(chalk.red(`✗ Unknown integration: ${integration}`));
+      console.log(chalk.gray("Run `alin list` to see available integrations"));
+      process.exit(1);
+    }
+
+    const { block } = await res.json();
+
     const installPath = resolveInstallPath(projectType);
     const fullFolderPath = path.join(cwd, installPath);
 
     console.log(chalk.green(`✓ Detected project type: ${projectType}`));
     createFolder(fullFolderPath);
 
-    // ── 4. Install package ───────────────────────────────────────────────
+    // ── 4. Install packages ──────────────────────────────────────────────
     const packageManager = detectPackageManager(cwd);
-    const installCommand = `${packageManager} ${packageManager === "npm" ? "install" : "add"} ${block.package}`;
 
-    if (isPackageInstalled(cwd, block.package)) {
-      console.log(
-        chalk.yellow(`⚠ ${block.package} is already installed, skipping`),
-      );
-    } else {
-      console.log(chalk.gray(`Running: ${installCommand}`));
-      const { execSync } = await import("child_process");
-      execSync(installCommand, { cwd, stdio: "inherit" });
-      console.log(chalk.green(`✓ Installed ${block.package}`));
+    // Install regular dependencies
+    for (const dep of block.variant.dependencies) {
+      if (isPackageInstalled(cwd, dep)) {
+        console.log(chalk.yellow(`⚠ ${dep} is already installed, skipping`));
+      } else {
+        const installCommand = `${packageManager} ${packageManager === "npm" ? "install" : "add"} ${dep}`;
+        console.log(chalk.gray(`Running: ${installCommand}`));
+        execSync(installCommand, { cwd, stdio: "inherit" });
+        console.log(chalk.green(`✓ Installed ${dep}`));
+      }
+    }
+
+    // Install dev dependencies
+    if (block.variant.devDependencies.length > 0) {
+      for (const dep of block.variant.devDependencies) {
+        if (isPackageInstalled(cwd, dep)) {
+          console.log(chalk.yellow(`⚠ ${dep} is already installed, skipping`));
+        } else {
+          const devFlag = packageManager === "npm" ? "--save-dev" : "-D";
+          const installCommand = `${packageManager} ${packageManager === "npm" ? "install" : "add"} ${devFlag} ${dep}`;
+          console.log(chalk.gray(`Running: ${installCommand}`));
+          execSync(installCommand, { cwd, stdio: "inherit" });
+          console.log(chalk.green(`✓ Installed ${dep}`));
+        }
+      }
     }
 
     // ── 5. Write integration files ───────────────────────────────────────
     for (const file of block.variant.files) {
-      const fullFilePath = path.join(fullFolderPath, file.name);
+      const fullFilePath = path.join(cwd, file.name);
+      const fileDir = path.dirname(fullFilePath);
+
       if (fileAlreadyExists(fullFilePath)) {
         console.log(chalk.yellow(`⚠ ${file.name} already exists, skipping`));
       } else {
+        createFolder(fileDir);
         writeFile(fullFilePath, file.content);
-        console.log(chalk.green(`✓ Created ${installPath}${file.name}`));
+        console.log(chalk.green(`✓ Created ${file.name}`));
       }
     }
 

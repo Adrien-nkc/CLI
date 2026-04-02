@@ -14,6 +14,7 @@ app.get("/blocks", (c) => {
 app.get("/blocks/:name", (c) => {
   const name = c.req.param("name");
   const variant = c.req.query("variant");
+  const framework = c.req.query("framework");
   const block = blocks.find((b) => b.name === name);
 
   if (!block) {
@@ -26,7 +27,17 @@ app.get("/blocks/:name", (c) => {
     if (!selectedVariant) {
       return c.json({ error: `Variant "${variant}" not found` }, 404);
     }
-    return c.json({ block: { ...block, variant: selectedVariant } });
+
+    // If files is an object with framework keys, resolve the right one
+    const files = Array.isArray(selectedVariant.files)
+      ? selectedVariant.files
+      : (selectedVariant.files[
+          framework as keyof typeof selectedVariant.files
+        ] ?? []);
+
+    return c.json({
+      block: { ...block, variant: { ...selectedVariant, files } },
+    });
   }
 
   return c.json({ block });
