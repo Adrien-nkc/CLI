@@ -29,4 +29,14 @@ describe("Health route", () => {
 
     expect(res.status).toBe(404);
   });
+  it("should return a single block by name", async () => {
+    const res = await app.request("/blocks/stripe");
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.block.name).toBe("stripe");
+    expect(body.block.package).toBe("stripe");
+    expect(body.block.files).toHaveLength(3);
+    expect(body.block.instructions).toHaveLength(5);
+  });
 });

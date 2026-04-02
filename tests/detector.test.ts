@@ -27,9 +27,8 @@ describe("detectProjectStructure", () => {
     expect(detectProjectStructure(tempDir)).toBe("generic");
   });
 
-  it("returns express when only a package.json exists", () => {
-    // we create a real package.json in the temp folder
-    writeFileSync(join(tempDir, "package.json"), "{}");
+  it("returns express when server.ts exists", () => {
+    writeFileSync(join(tempDir, "server.ts"), "");
     expect(detectProjectStructure(tempDir)).toBe("express");
   });
 
