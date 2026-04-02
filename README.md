@@ -15,7 +15,7 @@
 `bun run build`
 `npm install -g . --force`
 
-## You can also run bun run reinstall, which is a command I created in package.json to run those two with only one command
+## You can also run bun run r (reinstall), which is a command I created in package.json to run those two with only one command
 
 # How to push and pull changes
 

@@ -158,7 +158,10 @@ program
     // ── 7. Done ──────────────────────────────────────────────────────────
     console.log(chalk.cyan("\n📋 Next steps:"));
     block.variant.instructions.forEach((step: string, i: number) => {
-      console.log(chalk.white(`   ${i + 1}. ${step}`));
+      const coloredStep = step.replace(/(https?:\/\/[^\s,]+)/g, (url) =>
+        chalk.cyan(url),
+      );
+      console.log(chalk.white(`   ${i + 1}. ${coloredStep}`));
     });
     console.log("");
 

@@ -13,7 +13,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "build": "bun build src/index.ts --outdir dist --target node",
-    "reinstall": "bun run build && npm install -g . --force",
+    "r": "bun run build && npm install -g . --force",
     "start": "node dist/index.js"
   },
   "keywords": [],
