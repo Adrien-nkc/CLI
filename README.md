@@ -1,3 +1,11 @@
+# Run a test in watch mode
+
+`bun run test`
+
+# Run a test
+
+`bun run test:run`
+
 # How to push and pull changes
 
 `git pull` or `git pull origin main` # grab latest changes
