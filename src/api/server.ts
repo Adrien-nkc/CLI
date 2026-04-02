@@ -12,11 +12,21 @@ app.get("/blocks", (c) => {
 });
 
 app.get("/blocks/:name", (c) => {
-  const name = c.req.param("name"); // this captures the block name
+  const name = c.req.param("name");
+  const variant = c.req.query("variant");
   const block = blocks.find((b) => b.name === name);
 
   if (!block) {
     return c.json({ error: "Block not found" }, 404);
+  }
+
+  if (variant) {
+    const selectedVariant =
+      block.variants[variant as keyof typeof block.variants];
+    if (!selectedVariant) {
+      return c.json({ error: `Variant "${variant}" not found` }, 404);
+    }
+    return c.json({ block: { ...block, variant: selectedVariant } });
   }
 
   return c.json({ block });

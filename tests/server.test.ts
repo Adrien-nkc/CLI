@@ -36,7 +36,7 @@ describe("Health route", () => {
     expect(res.status).toBe(200);
     expect(body.block.name).toBe("stripe");
     expect(body.block.package).toBe("stripe");
-    expect(body.block.files).toHaveLength(3);
-    expect(body.block.instructions).toHaveLength(8);
+    expect(body.block.variants.advanced.files).toHaveLength(3);
+    expect(body.block.variants.advanced.instructions).toHaveLength(8);
   });
 });

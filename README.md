@@ -1,9 +1,6 @@
-# How to build and install the package globally
+# How to run the server
 
-`bun run build`
-`npm install -g . --force`
-
-## You can also run bun run reinstall, which is a command I created in package.json to run those two with only one command
+`bun run server`
 
 # Run a test in watch mode
 
@@ -12,6 +9,13 @@
 # Run a test
 
 `bun run test:run`
+
+# How to build and install the package globally
+
+`bun run build`
+`npm install -g . --force`
+
+## You can also run bun run reinstall, which is a command I created in package.json to run those two with only one command
 
 # How to push and pull changes
 

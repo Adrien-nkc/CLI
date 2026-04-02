@@ -2,7 +2,7 @@
 
 // ─── Imports ───────────────────────────────────────────────────────────────
 
-import { confirm } from "@clack/prompts"; // interactive y/n prompts
+import { confirm, select } from "@clack/prompts"; // interactive y/n prompts
 import { Command } from "commander"; // CLI command parser
 import chalk from "chalk"; // terminal colors
 import path from "path"; // file path utilities
@@ -32,10 +32,27 @@ program
   .command("install <integration>")
   .description("Install an API integration into your project")
   .action(async (integration: string) => {
-    // ── 1. Fetch block from API ──────────────────────────────────────────
-    const API_URL = process.env.ALIN_API_URL ?? "http://localhost:3000";
-    const res = await fetch(`${API_URL}/blocks/${integration}`);
+    // ── 1. Ask which variant the user wants ──────────────────────────────
+    const variant = await select({
+      message: "Which setup do you need?",
+      options: [
+        {
+          value: "simple",
+          label:
+            "Simple — Stripe hosted checkout (recommended for most projects)",
+        },
+        {
+          value: "advanced",
+          label: "Advanced — Custom checkout with webhooks",
+        },
+      ],
+    });
 
+    // ── 2. Fetch block from API ──────────────────────────────────────────
+    const API_URL = process.env.ALIN_API_URL ?? "http://localhost:3000";
+    const res = await fetch(
+      `${API_URL}/blocks/${integration}?variant=${String(variant)}`,
+    );
     if (!res.ok) {
       console.log(chalk.red(`✗ Unknown integration: ${integration}`));
       console.log(chalk.gray("Run `alin list` to see available integrations"));
@@ -44,9 +61,9 @@ program
 
     const { block } = await res.json();
 
-    // ── 2. Detect project type and resolve install path ──────────────────
+    // ── 3. Detect project type and resolve install path ──────────────────
     const cwd = process.cwd();
-    // ── Check if this is a Node project ─────────────────────────────────────
+
     if (!isNodeProject(cwd)) {
       const setup = await confirm({
         message: "No package.json found. Set up a Node project here?",
@@ -63,6 +80,7 @@ program
       execSync("npm init -y", { cwd, stdio: "ignore" });
       console.log(chalk.green("✓ Node project initialized"));
     }
+
     const projectType = detectProjectStructure(cwd);
     const installPath = resolveInstallPath(projectType);
     const fullFolderPath = path.join(cwd, installPath);
@@ -70,7 +88,7 @@ program
     console.log(chalk.green(`✓ Detected project type: ${projectType}`));
     createFolder(fullFolderPath);
 
-    // ── Install package ───────────────────────────────────────────────────
+    // ── 4. Install package ───────────────────────────────────────────────
     const packageManager = detectPackageManager(cwd);
     const installCommand = `${packageManager} ${packageManager === "npm" ? "install" : "add"} ${block.package}`;
 
@@ -85,8 +103,8 @@ program
       console.log(chalk.green(`✓ Installed ${block.package}`));
     }
 
-    // ── 3. Write integration files ───────────────────────────────────────
-    for (const file of block.files) {
+    // ── 5. Write integration files ───────────────────────────────────────
+    for (const file of block.variant.files) {
       const fullFilePath = path.join(fullFolderPath, file.name);
       if (fileAlreadyExists(fullFilePath)) {
         console.log(chalk.yellow(`⚠ ${file.name} already exists, skipping`));
@@ -96,8 +114,10 @@ program
       }
     }
 
-    // ── 4. Write .env.example ────────────────────────────────────────────
-    const envKeys = block.variables.map((v: string) => `${v}=`).join("\n");
+    // ── 6. Write .env.example ────────────────────────────────────────────
+    const envKeys = block.variant.variables
+      .map((v: string) => `${v}=`)
+      .join("\n");
     const envPath = path.join(cwd, ".env.example");
 
     if (fileAlreadyExists(envPath)) {
@@ -115,10 +135,9 @@ program
       console.log(chalk.green(`✓ Generated .env.example with required keys`));
     }
 
-    // ── 5. Done ──────────────────────────────────────────────────────────
-
+    // ── 7. Done ──────────────────────────────────────────────────────────
     console.log(chalk.cyan("\n📋 Next steps:"));
-    block.instructions.forEach((step: string, i: number) => {
+    block.variant.instructions.forEach((step: string, i: number) => {
       console.log(chalk.white(`   ${i + 1}. ${step}`));
     });
     console.log("");
