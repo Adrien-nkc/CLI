@@ -4,11 +4,36 @@ export const blocks = [
     description: "Stripe payment integration",
     variants: {
       simple: {
-        variables: ["STRIPE_SECRET_KEY"],
-        dependencies: ["stripe", "express"],
-        devDependencies: ["@types/express"],
+        variables: ["STRIPE_SECRET_KEY", "VITE_PRICE_ID", "VITE_APP_URL"],
+        dependencies: ["stripe", "express", "cors"],
+        devDependencies: ["@types/express", "@types/cors"],
         files: {
           vite: [
+            {
+              name: "backend/server.ts",
+              content: `import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import paymentRoutes from './payment.ts';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT ?? 3001;
+
+// Allow requests from your Vite frontend
+app.use(cors({ origin: process.env.CLIENT_URL ?? 'http://localhost:5173' }));
+app.use(express.json());
+
+// Mount payment routes
+app.use('/api/payment', paymentRoutes);
+
+app.listen(PORT, () => {
+  console.log('✓ Backend server running at http://localhost:' + PORT);
+});
+
+export default app;`,
+            },
             {
               name: "backend/stripe.ts",
               content: `import Stripe from 'stripe';
@@ -39,7 +64,7 @@ export default stripe;`,
             {
               name: "backend/payment.ts",
               content: `import express from 'express';
-import stripe from './stripe';
+import stripe from './stripe.ts';
 
 const router = express.Router();
 
@@ -102,7 +127,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001
 // Creates a checkout session and redirects the user to Stripe's hosted payment page
 // priceId: the Stripe price ID for the plan (found in your Stripe dashboard)
 // returnUrlBase: your frontend origin e.g. http://localhost:5173
-export async function createCheckoutSession(priceId: string, returnUrlBase: string): Promise<void> {
+export async function createCheckoutSession(priceId: string, returnUrlBase: string = import.meta.env.VITE_APP_URL ?? 'http://localhost:5173'): Promise<void> {
   try {
     const response = await fetch(\`\${API_BASE_URL}/payment/checkout-session\`, {
       method: 'POST',
@@ -153,6 +178,8 @@ export async function getCheckoutSession(sessionId: string) {
           "Rename .env.example to .env, this is where your secret keys live locally",
           "If you already have a .env file, just copy the contents of .env.example into it instead",
           "Open .env and paste your Stripe Secret key after STRIPE_SECRET_KEY=",
+          "Start the backend server with: npm run backend",
+          "Run your Vite frontend with: npm run dev",
           "Create a product and price in your Stripe dashboard at https://dashboard.stripe.com/products",
           "Copy the Price ID and use it as priceId when calling createCheckoutSession()",
         ],

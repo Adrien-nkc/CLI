@@ -14,6 +14,7 @@ import {
   isPackageInstalled,
 } from "./logic/detector";
 import { createFolder, writeFile, fileAlreadyExists } from "./logic/writer";
+import { readFileSync, writeFileSync } from "fs";
 
 // ─── CLI Setup ─────────────────────────────────────────────────────────────
 
@@ -131,6 +132,25 @@ program
         createFolder(fileDir);
         writeFile(fullFilePath, file.content);
         console.log(chalk.green(`✓ Created ${file.name}`));
+      }
+    }
+
+    // ── 6. Add backend script to package.json ───────────────────────────────
+    if (variant === "simple") {
+      const pkgPath = path.join(cwd, "package.json");
+      const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
+
+      if (!pkg.scripts.backend) {
+        pkg.scripts.backend =
+          "node --experimental-strip-types backend/server.ts";
+        writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
+        console.log(chalk.green(`✓ Added "backend" script to package.json`));
+      } else {
+        console.log(
+          chalk.yellow(
+            `⚠ "backend" script already exists in package.json, skipping`,
+          ),
+        );
       }
     }
 
