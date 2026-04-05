@@ -49,9 +49,5 @@ then `cd CLI` and `bun install`
 
 # TODO
 
-1. JavaScript fundamentals first
-   You're writing TypeScript but there are JS concepts underneath you haven't hit yet — promises, async/await, fetch. You'll need these the moment Alin talks to a backend API.
-2. Finish Alin's core
-   Put real boilerplate code inside the generated files. When someone runs alin install stripe the created stripe.ts should have actual working code, not a comment. This will teach you file manipulation and string templating.
-3. Build the backend
+1. Build the backend
    A simple REST API that stores integration templates. This is when Alin becomes a real product — templates live on your server, not hardcoded in the CLI. This teaches you servers, APIs and databases.
