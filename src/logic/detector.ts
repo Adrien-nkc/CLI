@@ -1,21 +1,8 @@
-import { existsSync } from "fs";
+import { existsSync } from "fs"; // file existence check, it returns true if the file exists, false otherwise
 
 export type ProjectType = "nextjs" | "vite" | "express" | "generic";
 
 export type PackageManager = "npm" | "bun" | "pnpm" | "yarn";
-
-export function detectPackageManager(cwd: string): PackageManager {
-  if (existsSync(`${cwd}/bun.lock`) || existsSync(`${cwd}/bun.lockb`)) {
-    return "bun";
-  }
-  if (existsSync(`${cwd}/pnpm-lock.yaml`)) {
-    return "pnpm";
-  }
-  if (existsSync(`${cwd}/yarn.lock`)) {
-    return "yarn";
-  }
-  return "npm";
-}
 
 export function detectProjectStructure(cwd: string): ProjectType {
   if (
@@ -41,10 +28,6 @@ export function detectProjectStructure(cwd: string): ProjectType {
   return "generic";
 }
 
-export function isNodeProject(cwd: string): boolean {
-  return existsSync(`${cwd}/package.json`);
-}
-
 export function resolveInstallPath(projectType: ProjectType): string {
   const paths: Record<ProjectType, string> = {
     nextjs: "src/lib/",
@@ -53,6 +36,23 @@ export function resolveInstallPath(projectType: ProjectType): string {
     generic: "src/",
   };
   return paths[projectType];
+}
+
+export function detectPackageManager(cwd: string): PackageManager {
+  if (existsSync(`${cwd}/bun.lock`) || existsSync(`${cwd}/bun.lockb`)) {
+    return "bun";
+  }
+  if (existsSync(`${cwd}/pnpm-lock.yaml`)) {
+    return "pnpm";
+  }
+  if (existsSync(`${cwd}/yarn.lock`)) {
+    return "yarn";
+  }
+  return "npm";
+}
+
+export function isNodeProject(cwd: string): boolean {
+  return existsSync(`${cwd}/package.json`);
 }
 
 export function isPackageInstalled(cwd: string, packageName: string): boolean {
