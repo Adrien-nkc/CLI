@@ -36,3 +36,5 @@ Simulate being a real client and validate the full Stripe simple variant works e
 ✅ Handles .env.example conflicts with a prompt
 ✅ Skips existing files
 ✅ Shows next steps with clickable links after install
+
+# Do the SDK but make a plan first
