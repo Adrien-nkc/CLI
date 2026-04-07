@@ -6,7 +6,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "jsx": "react-jsx",
+    "declaration": true,
+    "declarationDir": "./dist",
+    "outDir": "./dist"
   },
   "include": ["src", "tests"],
   "exclude": ["node_modules", "dist"]
