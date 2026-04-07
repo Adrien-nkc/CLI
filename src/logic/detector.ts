@@ -1,4 +1,4 @@
-import { existsSync } from "fs"; // file existence check, it returns true if the file exists, false otherwise
+import { existsSync, readFileSync } from "fs"; // file existence check, it returns true if the file exists, false otherwise
 
 export type ProjectType = "nextjs" | "vite" | "express" | "generic";
 
@@ -58,7 +58,7 @@ export function isNodeProject(cwd: string): boolean {
 export function isPackageInstalled(cwd: string, packageName: string): boolean {
   try {
     const packageJson = JSON.parse(
-      require("fs").readFileSync(`${cwd}/package.json`, "utf-8"),
+      readFileSync(`${cwd}/package.json`, "utf-8"),
     );
     return (
       packageName in (packageJson.dependencies ?? {}) ||

@@ -73,23 +73,35 @@ program
 
     // ── 3. Fetch block from API ──────────────────────────────────────────
     const API_URL = process.env.ALIN_API_URL ?? "http://localhost:3000";
-    const res = await fetch(
-      `${API_URL}/blocks/${integration}?variant=${String(variant)}&framework=${projectType}`,
-    );
 
-    if (!res.ok) {
-      console.log(chalk.red(`✗ Unknown integration: ${integration}`));
-      console.log(chalk.gray("Run `alin list` to see available integrations"));
+    let block;
+
+    try {
+      const res = await fetch(
+        `${API_URL}/blocks/${integration}?variant=${String(variant)}&framework=${projectType}`,
+      );
+
+      if (!res.ok) {
+        console.log(chalk.red(`✗ Unknown integration: ${integration}`));
+        console.log(
+          chalk.gray("Run `alin list` to see available integrations"),
+        );
+        process.exit(1);
+      }
+
+      ({ block } = await res.json());
+
+      const installPath = resolveInstallPath(projectType);
+      const fullFolderPath = path.join(cwd, installPath);
+
+      console.log(chalk.green(`✓ Detected project type: ${projectType}`));
+      createFolder(fullFolderPath);
+    } catch (error) {
+      console.log(
+        chalk.red(`✗ Our servers are taking a nap. Try again in a bit!`),
+      );
       process.exit(1);
     }
-
-    const { block } = await res.json();
-
-    const installPath = resolveInstallPath(projectType);
-    const fullFolderPath = path.join(cwd, installPath);
-
-    console.log(chalk.green(`✓ Detected project type: ${projectType}`));
-    createFolder(fullFolderPath);
 
     // ── 4. Install packages ──────────────────────────────────────────────
     const packageManager = detectPackageManager(cwd);
@@ -154,7 +166,7 @@ program
       }
     }
 
-    // ── 6. Write .env.example ────────────────────────────────────────────
+    // ── 7. Write .env.example ────────────────────────────────────────────
     const envKeys = block.variant.variables
       .map((v: string) => `${v}=`)
       .join("\n");
@@ -175,7 +187,7 @@ program
       console.log(chalk.green(`✓ Generated .env.example with required keys`));
     }
 
-    // ── 7. Done ──────────────────────────────────────────────────────────
+    // ── 8. Done ──────────────────────────────────────────────────────────
     console.log(chalk.cyan("\n📋 Next steps:"));
     block.variant.instructions.forEach((step: string, i: number) => {
       const coloredStep = step.replace(/(https?:\/\/[^\s,]+)/g, (url) =>
