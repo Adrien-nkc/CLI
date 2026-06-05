@@ -72,7 +72,8 @@ program
     const projectType = detectProjectStructure(cwd);
 
     // ── 3. Fetch block from API ──────────────────────────────────────────
-    const API_URL = process.env.ALIN_API_URL ?? "http://localhost:3000";
+    const API_URL =
+      process.env.ALIN_API_URL ?? "https://cli-production-0af8.up.railway.app";
 
     let block;
 
