@@ -36,9 +36,8 @@ export const blocks = [
         instructions: [
           "Start the backend server with: npm run backend",
           "Run your Vite frontend with: npm run dev",
-          "Create a product and price in your Stripe dashboard at https://dashboard.stripe.com/products",
-          "Copy the Price ID and use it as VITE_PRICE_ID in your .env file",
-          "Add the generated pages to your router: /checkout → src/pages/CheckoutPage.tsx, /success → src/pages/Success.tsx",
+          "If you haven't created a product in the Stripe dashboard you can go to https://dashboard.stripe.com/products",
+          "After that fill the .env file (if you haven't yet)",
         ],
       },
     },

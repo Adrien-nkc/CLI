@@ -218,7 +218,14 @@ program
       message: "Paste your Stripe API key:",
     });
 
-    writeFile(envPath, `STRIPE_SECRET_KEY=${String(apiKey)}`);
+    const priceID = await text({
+      message: "Paste your Stripe price ID:",
+    });
+
+    writeFile(
+      envPath,
+      `STRIPE_SECRET_KEY=${String(apiKey)}\nVITE_PRICE_ID=${String(priceID)}`,
+    );
 
     console.log(chalk.cyan("\n📋 Next steps:"));
     block.variant.instructions.forEach((step: string, i: number) => {
