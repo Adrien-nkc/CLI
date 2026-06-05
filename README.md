@@ -2,6 +2,8 @@
 
 `bun run server`
 
+This will start a local server that will serve as your backend 
+
 # Run a test in watch mode
 
 `bun run test`
