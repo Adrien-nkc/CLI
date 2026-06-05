@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import express from "express";
 import stripe from "./stripe.ts";
 

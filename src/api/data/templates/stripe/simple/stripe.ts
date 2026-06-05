@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import Stripe from "stripe";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
