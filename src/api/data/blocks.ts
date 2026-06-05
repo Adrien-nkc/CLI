@@ -27,6 +27,7 @@ export const blocks = [
               name: "src/services/stripeService.ts",
               template: "stripe/simple/stripeService.ts",
             },
+            { name: "src/App.tsx", template: "stripe/simple/App.tsx" },
           ],
           nextjs: [],
           express: [],
