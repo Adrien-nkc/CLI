@@ -2,7 +2,7 @@
 
 // ─── Imports ───────────────────────────────────────────────────────────────
 
-import { confirm, select } from "@clack/prompts"; // interactive y/n prompts
+import { confirm, select, text } from "@clack/prompts"; // interactive y/n prompts
 import { Command } from "commander"; // CLI command parser
 import chalk from "chalk"; // terminal colors
 import path from "path"; // file path utilities
@@ -15,6 +15,7 @@ import {
 } from "./logic/detector";
 import { createFolder, writeFile, fileAlreadyExists } from "./logic/writer";
 import { readFileSync, writeFileSync } from "fs";
+import open from "open"; // open URLs in the browser
 
 // ─── CLI Setup ─────────────────────────────────────────────────────────────
 
@@ -167,28 +168,43 @@ program
       }
     }
 
-    // ── 7. Write .env.example ────────────────────────────────────────────
+    // ── 7. Write .env ────────────────────────────────────────────
     const envKeys = block.variant.variables
       .map((v: string) => `${v}=`)
       .join("\n");
-    const envPath = path.join(cwd, ".env.example");
+    const envPath = path.join(cwd, ".env");
 
     if (fileAlreadyExists(envPath)) {
       const overwrite = await confirm({
-        message: ".env.example already exists. Overwrite it?",
+        message: ".env already exists. Overwrite it?",
       });
       if (overwrite) {
         writeFile(envPath, envKeys);
-        console.log(chalk.green(`✓ Updated .env.example with required keys`));
+        console.log(chalk.green(`✓ Updated .env with required keys`));
       } else {
-        console.log(chalk.yellow(`⚠ Skipped .env.example`));
+        console.log(chalk.yellow(`⚠ Skipped .env`));
       }
     } else {
       writeFile(envPath, envKeys);
-      console.log(chalk.green(`✓ Generated .env.example with required keys`));
+      console.log(chalk.green(`✓ Generated .env with required keys`));
     }
 
     // ── 8. Done ──────────────────────────────────────────────────────────
+
+    const openBrowser = await confirm({
+      message: "Open Stripe dashboard to get your API key?",
+    });
+
+    if (openBrowser) {
+      open("https://dashboard.stripe.com/apikeys");
+    }
+
+    const apiKey = await text({
+      message: "Paste your Stripe API key:",
+    });
+
+    writeFile(envPath, `STRIPE_SECRET_KEY=${String(apiKey)}`);
+
     console.log(chalk.cyan("\n📋 Next steps:"));
     block.variant.instructions.forEach((step: string, i: number) => {
       const coloredStep = step.replace(/(https?:\/\/[^\s,]+)/g, (url) =>
@@ -206,5 +222,3 @@ program
 // ─── Run ───────────────────────────────────────────────────────────────────
 
 program.parse();
-
-// generator.ts has been removed for now in this file
