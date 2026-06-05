@@ -46,8 +46,3 @@ then `cd CLI` and `bun install`
 # How to uninstall globally
 
 `npm uninstall -g alin` the reason why the npm knows that the package is called "alin" is because the package.json has the name field set to "alin"
-
-# TODO
-
-1. Build the backend
-   A simple REST API that stores integration templates. This is when Alin becomes a real product — templates live on your server, not hardcoded in the CLI. This teaches you servers, APIs and databases.
