@@ -8,14 +8,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const TEMPLATES_DIR = join(__dirname, "data", "templates");
 
 function readTemplateFiles(files: { name: string; template: string }[]) {
-  return files.map((file) => {
-    const fullPath = join(TEMPLATES_DIR, file.template);
-    console.log("Reading:", fullPath);
-    return {
-      name: file.name,
-      content: readFileSync(fullPath, "utf-8"),
-    };
-  });
+  return files.map((file) => ({
+    name: file.name,
+    content: readFileSync(join(TEMPLATES_DIR, file.template), "utf-8"),
+  }));
 }
 
 const app = new Hono();

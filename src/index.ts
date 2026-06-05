@@ -141,7 +141,22 @@ program
       const fileDir = path.dirname(fullFilePath);
 
       if (fileAlreadyExists(fullFilePath)) {
-        console.log(chalk.yellow(`⚠ ${file.name} already exists, skipping`));
+        if (file.name === "src/App.tsx") {
+          const overwrite = await confirm({
+            message: `App.tsx already exists. Overwrite it? This will replace your existing App.tsx with the Stripe integration version.`,
+          });
+
+          if (overwrite) {
+            writeFile(fullFilePath, file.content);
+            console.log(chalk.green(`✓ Overwrote App.tsx with router`));
+          } else {
+            console.log(
+              chalk.yellow(`⚠ Skipped App.tsx. Add routes manually.`),
+            );
+          }
+        } else {
+          console.log(chalk.yellow(`⚠ ${file.name} already exists, skipping`));
+        }
       } else {
         createFolder(fileDir);
         writeFile(fullFilePath, file.content);
