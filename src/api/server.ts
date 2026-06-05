@@ -1,5 +1,22 @@
 import { Hono } from "hono";
 import { blocks } from "./data/blocks";
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const TEMPLATES_DIR = join(__dirname, "data", "templates");
+
+function readTemplateFiles(files: { name: string; template: string }[]) {
+  return files.map((file) => {
+    const fullPath = join(TEMPLATES_DIR, file.template);
+    console.log("Reading:", fullPath);
+    return {
+      name: file.name,
+      content: readFileSync(fullPath, "utf-8"),
+    };
+  });
+}
 
 const app = new Hono();
 
@@ -29,11 +46,13 @@ app.get("/blocks/:name", (c) => {
     }
 
     // If files is an object with framework keys, resolve the right one
-    const files = Array.isArray(selectedVariant.files)
+    const rawFiles = Array.isArray(selectedVariant.files)
       ? selectedVariant.files
       : (selectedVariant.files[
           framework as keyof typeof selectedVariant.files
         ] ?? []);
+
+    const files = readTemplateFiles(rawFiles);
 
     return c.json({
       block: { ...block, variant: { ...selectedVariant, files } },
