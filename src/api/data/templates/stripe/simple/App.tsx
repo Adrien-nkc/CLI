@@ -10,6 +10,7 @@ function App() {
         <Route path="/" element={<div>Home</div>} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<div>Payment has been canceled</div>} />
       </Routes>
     </BrowserRouter>
   );

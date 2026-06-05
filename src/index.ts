@@ -14,8 +14,10 @@ import {
   isPackageInstalled,
 } from "./logic/detector";
 import { createFolder, writeFile, fileAlreadyExists } from "./logic/writer";
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, existsSync, writeFileSync } from "fs";
 import open from "open"; // open URLs in the browser
+import { join } from "path";
+import { homedir } from "os";
 
 // ─── CLI Setup ─────────────────────────────────────────────────────────────
 
@@ -25,6 +27,16 @@ program
   .name("alin")
   .description("Turn a multi-hour API integration into a single command")
   .version("0.0.1");
+
+const CONFIG_PATH = join(homedir(), ".alin", "config.json");
+
+if (existsSync(CONFIG_PATH)) {
+  const config = JSON.parse(readFileSync(CONFIG_PATH, "utf-8"));
+  if (config.apiUrl) process.env.ALIN_API_URL = config.apiUrl;
+}
+
+const API_URL =
+  process.env.ALIN_API_URL ?? "https://cli-production-0af8.up.railway.app";
 
 // ─── Install Command ───────────────────────────────────────────────────────
 // Usage: alin install <integration>
@@ -82,6 +94,10 @@ program
       const res = await fetch(
         `${API_URL}/blocks/${integration}?variant=${String(variant)}&framework=${projectType}`,
       );
+
+      console.log(chalk.gray(`Using API: ${API_URL}`));
+      console.log("API URL:", process.env.ALIN_API_URL);
+      console.log("CWD:", process.cwd());
 
       if (!res.ok) {
         console.log(chalk.red(`✗ Unknown integration: ${integration}`));
@@ -171,7 +187,7 @@ program
 
       if (!pkg.scripts.backend) {
         pkg.scripts.backend =
-          "node --experimental-strip-types backend/server.ts";
+          "node --no-warnings --experimental-strip-types backend/server.ts";
         writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
         console.log(chalk.green(`✓ Added "backend" script to package.json`));
       } else {
@@ -227,6 +243,8 @@ program
       `STRIPE_SECRET_KEY=${String(apiKey)}\nVITE_PRICE_ID=${String(priceID)}`,
     );
 
+    console.log(chalk.green(`✓ ${integration} is ready.`));
+
     console.log(chalk.cyan("\n📋 Next steps:"));
     block.variant.instructions.forEach((step: string, i: number) => {
       const coloredStep = step.replace(/(https?:\/\/[^\s,]+)/g, (url) =>
@@ -235,10 +253,6 @@ program
       console.log(chalk.white(`   ${i + 1}. ${coloredStep}`));
     });
     console.log("");
-
-    console.log(
-      chalk.green(`✓ ${integration} is ready. Add your keys and go.`),
-    );
   });
 
 // ─── Run ───────────────────────────────────────────────────────────────────
