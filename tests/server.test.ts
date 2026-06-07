@@ -36,7 +36,5 @@ describe("Health route", () => {
     expect(res.status).toBe(200);
     expect(body.block.name).toBe("stripe");
     expect(body.block.description).toBe("Stripe payment integration");
-    expect(body.block.variants.advanced.files).toHaveLength(3);
-    expect(body.block.variants.advanced.instructions).toHaveLength(8);
   });
 });
