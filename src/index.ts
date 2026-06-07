@@ -35,7 +35,7 @@ if (existsSync(CONFIG_PATH)) {
   if (config.apiUrl) process.env.ALIN_API_URL = config.apiUrl;
 }
 
-const API_URL = process.env.ALIN_API_URL ?? "http://localhost:3000";
+const API_URL = process.env.ALIN_API_URL ?? "https://alin-d1w3.onrender.com";
 
 // ─── Install Command ───────────────────────────────────────────────────────
 // Usage: alin install <integration>
@@ -86,7 +86,6 @@ program
     const projectType = detectProjectStructure(cwd);
 
     // ── 3. Fetch block from API ──────────────────────────────────────────
-    const API_URL = process.env.ALIN_API_URL ?? "http://localhost:3000";
 
     let block;
 
