@@ -1,5 +1,5 @@
 {
-  "name": "alin",
+  "name": "alin-cli",
   "version": "0.0.1",
   "description": "Turn a multi-hour API integration into a single command",
   "type": "module",

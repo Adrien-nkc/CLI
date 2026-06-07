@@ -1,6 +1,6 @@
 export const stripeSimple = {
   variables: ["STRIPE_SECRET_KEY", "VITE_PRICE_ID", "VITE_APP_URL"],
-  dependencies: ["stripe", "express", "cors", "react-router-dom"],
+  dependencies: ["stripe", "express", "cors", "react-router-dom", "dotenv"],
   devDependencies: ["@types/express", "@types/cors"],
   files: {
     vite: [
