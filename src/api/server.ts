@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { blocks } from "./data/blocks";
+import { blocks } from "./data/blocks/index";
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
