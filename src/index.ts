@@ -96,8 +96,6 @@ program
 
       // res receives the responser from the API
 
-      console.log(chalk.gray(`(DEBUG DELETE AFTER) Using API: ${API_URL}`));
-
       if (!res.ok) {
         console.log(chalk.red(`✗ Unknown integration: ${integration}`));
         console.log(
@@ -117,7 +115,9 @@ program
       createFolder(fullFolderPath);
     } catch (error) {
       console.log(
-        chalk.red(`✗ Our servers are taking a nap. Try again in a bit!`),
+        chalk.red(
+          `✗ Our servers are taking a nap. Try again in a bit! ${error}`,
+        ),
       );
       process.exit(1);
     }
