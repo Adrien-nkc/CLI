@@ -1,0 +1,6 @@
+src/
+tests/
+bun.lock
+TODO.md
+tsconfig.json
+.env

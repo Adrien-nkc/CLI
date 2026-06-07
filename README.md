@@ -2,6 +2,10 @@
 
 Alin is a CLI tool that allows you to turn a longe API integration into a single command. It is meant for developers who want to quickly add a new API integration to their project without going trough all of the documentation and setup.
 
+# Use Alin
+
+`npx alin-cli install stripe`
+
 # What can Alin do compared to using AI tools?
 
 Alin will not make you go back and forth between any AI. It is a simple integration tool that will help you add API integrations without burning unnecessary tokens.
