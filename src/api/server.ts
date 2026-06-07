@@ -23,6 +23,10 @@ function readTemplateFiles(files: { name: string; template: string }[]) {
 
 const app = new Hono();
 
+app.get("/", (c) => {
+  return c.json({ status: "ok" });
+});
+
 app.get("/health", (c) => {
   return c.json({ status: "ok" });
 });

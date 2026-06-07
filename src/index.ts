@@ -96,8 +96,6 @@ program
       );
 
       console.log(chalk.gray(`Using API: ${API_URL}`));
-      console.log("API URL:", process.env.ALIN_API_URL);
-      console.log("CWD:", process.cwd());
 
       if (!res.ok) {
         console.log(chalk.red(`✗ Unknown integration: ${integration}`));
